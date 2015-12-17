@@ -1,55 +1,81 @@
-#!/bin/sh
+#!/bin/bash
 
-# base off this https://github.com/acrogenesis/macchanger but in bash bc
-help="usage: macchanger [options] [device]\n"
-help+=" \n"
-help+="options:\n"
-help+="-m, --mac MAC             Set the MAC address,    macchanger -m XX:XX:XX:XX:XX:XX en0\n"
-help+="-r, --random              Set random MAC address, macchanger -r en0\n"
-help+="-s, --show                Show the MAC address,   macchanger -s en0"
+help() {
+    echo "usage: macchanger [options] [device]"
+    echo " "
+    echo "options:"
+    echo "-m, --mac                 Set the MAC address,    macchanger -m en0 XX:XX:XX:XX:XX:XX"
+    echo "-r, --random              Set random MAC address, macchanger -r en0"
+    echo "-s, --show                Show the MAC address,   macchanger -s en0"
+}
 
+OS() {
+    if [[ "$OSTYPE" == darwin* ]]; then
+        echo 'OSX'
+    elif [[ "$OSTYPE" == linux-gnu* ]]; then
+        echo 'linux'
+    else
+        echo 'unknown'
+    fi
+}
+
+MAC() {
+    if [ "$(OS)" == "OSX" ]; then
+        ifconfig "$1" | grep --color=never ether | cut -c 8-
+    else
+        ifconfig "$1" | grep --color=never HWaddr | rev | cut -c 3-19 | rev
+    fi
+}
+
+generateMAC() {
+    if hash openssl 2>/dev/null; then
+        openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//'
+    else
+        printf '%02X:%02X:%02X:%02X:%02X:%02X\n' \
+            $((RANDOM%256)) $((RANDOM%256)) \
+            $((RANDOM%256)) $((RANDOM%256)) \
+            $((RANDOM%256)) $((RANDOM%256))
+    fi
+}
+
+changeMAC() {
+    DEVICE=$1
+    NEWMAC=$2
+    sudo ifconfig "$DEVICE" ether "$NEWMAC" && \
+        echo "$DEVICE => $(MAC "$DEVICE")"
+}
+
+# $2 = device, $3 = MAC address
 if (($# > 0)); then
     case "$1" in
         -m|--mac)
             if (($# > 2)); then
-                DEVICE=$2
-                NEWMAC=$3
+                changeMAC "$2" "$3"
             else
                 echo "macchanger: no device or mac address specified"
+                exit 1
             fi
             ;;
         -r|--random)
             if (($# > 1)); then
-                DEVICE=$2
-                if hash openssl 2>/dev/null; then
-                    NEWMAC="$(openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//')"
-                else
-                    NEWMAC="$(printf '%02X:%02X:%02X:%02X:%02X:%02X\n' \
-                        $((RANDOM%256)) $((RANDOM%256)) \
-                        $((RANDOM%256)) $((RANDOM%256)) \
-                        $((RANDOM%256)) $((RANDOM%256)))"
-                fi
+                changeMAC "$2" "$(generatedMAC)"
             else
                 echo "macchanger: no device specified"
+                exit 1
             fi
             ;;
         -s|--show)
             if (($# > 1)); then
-                ifconfig "$2" | grep --color=never ether | cut -c 8- | head -1
+                MAC "$2"
             else
                 echo "macchanger: no device specified"
+                exit 1
             fi
             ;;
         *)
-            echo "$help"
+            help
             ;;
     esac
 else
-    echo "$help"
+    help
 fi
-
-if [ -n "$DEVICE" ] && [ -n "$NEWMAC" ]; then
-    sudo ifconfig "$DEVICE" ether "$NEWMAC" && \
-        echo "$DEVICE => $NEWMAC"
-fi
-
