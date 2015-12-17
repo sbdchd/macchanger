@@ -1,4 +1,4 @@
-# macchanger
+# macchanger [![Build Status](https://travis-ci.org/sbdchd/macchanger.svg?branch=master)](https://travis-ci.org/sbdchd/macchanger)
 
 A Bash implimentation of a MAC address changer.
 
