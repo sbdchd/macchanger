@@ -1,0 +1,32 @@
+.TH MACCHANGER 1 "December 17, 2015" "1.0" "User Commands"
+.SH NAME
+.B macchanger
+- MAC Address Changer
+.SH SYNOPSIS
+.B macchanger
+[options] [device]
+.SH DESCRIPTION
+.B macchanger
+provides a simple interface to change a network device's MAC address.
+.SH OPTIONS
+.TP
+.B -m, --m [device] [MAC-address]
+Set the MAC address of the device to the provided MAC, which must be in the format XX:XX:XX:XX:XX:XX.
+.TP
+.B -r, --random [device]
+Set the MAC address of the device to a randomly generated MAC address.
+.TP
+.B -s, --show [device]
+Show the MAC address of the device.
+
+.SH HOMEPAGE
+<https://github.com/sbdchd/macchanger>
+
+.SH REPORTING BUGS
+<https://github.com/sbdchd/macchanger/issues/new>
+
+.SH AUTHOR
+Steve Dignam <steve@dignam.xyz>
+
+.SH COPYRIGHT
+Simplified BSD License
