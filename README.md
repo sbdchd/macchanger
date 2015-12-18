@@ -18,8 +18,19 @@ options:
 
 ## Setup
 
-Homebrew
+Homebrew (OSX)
 
 ```
 brew install sbdchd/macchanger/macchanger
+```
+
+Source
+
+```
+git clone https://github.com/sbdchd/macchanger macchanger/ && \
+cd macchanger && \
+chmod +x macchanger && \
+./macchanger
+
+# add macchanger to your PATH to use it anywhere
 ```

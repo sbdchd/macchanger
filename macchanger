@@ -28,14 +28,12 @@ MAC() {
 }
 
 generateMAC() {
-    if hash openssl 2>/dev/null; then
-        openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//'
-    else
-        printf '%02X:%02X:%02X:%02X:%02X:%02X\n' \
-            $((RANDOM%256)) $((RANDOM%256)) \
-            $((RANDOM%256)) $((RANDOM%256)) \
-            $((RANDOM%256)) $((RANDOM%256))
-    fi
+    ran() { echo $((RANDOM%256));}
+    # ensure the most significant digit is valid i.e., even in decimal form
+    m=$(ran)
+    (( m % 2 != 0 )) && m=$((m+1))
+    printf '%02X:%02X:%02X:%02X:%02X:%02X\n' \
+        "$m" "$(ran)" "$(ran)" "$(ran)" "$(ran)" "$(ran)"
 }
 
 changeMAC() {
@@ -58,7 +56,7 @@ if (($# > 0)); then
             ;;
         -r|--random)
             if (($# > 1)); then
-                changeMAC "$2" "$(generatedMAC)"
+                changeMAC "$2" "$(generateMAC)"
             else
                 echo "macchanger: no device specified"
                 exit 1
