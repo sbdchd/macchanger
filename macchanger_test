@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-#bash macchanger_test.sh | column -t -s :
+#bash macchanger_test | column -t -s :
 
 exitStatus=0
 

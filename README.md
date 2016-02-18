@@ -4,7 +4,6 @@ A Bash implimentation of a MAC address changer.
 
 Based off [acrogenesis](https://github.com/acrogenesis/macchanger)' ruby implimentation.
 
-
 ## Usage
 
 ```
